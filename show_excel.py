@@ -25,15 +25,20 @@ if uploaded_files:
     # 显示该文件的内容
     st.subheader(f"{file_choice} 的内容")
     
-    # 获取 A 列数据并格式化显示
+    # 处理每一行数据
     for index, row in selected_df.iterrows():
         # A列数据用红色 <p> 标签显示
         a_column = f'<p style="color: red">{row[0]}</p>'
         
-        # 其他列数据按 <p> 和 <br> 格式化显示
-        other_columns = '<p>' + '<br>'.join([str(val) for val in row[1:]]) + '</p>'
+        # 其他列数据处理，忽略空单元格
+        other_columns = '<p>'
+        for value in row[1:]:
+            if pd.notna(value):  # 忽略 NaN 值
+                other_columns += str(value) + '<br>'
+        other_columns += '</p>'
         
-        # 输出每一行
+        # 如果 A 列数据和其他列数据都不为空，则显示
         st.markdown(a_column, unsafe_allow_html=True)
-        st.markdown(other_columns + '<hr>', unsafe_allow_html=True)
+        if other_columns != '<p></p>':  # 确保不显示空的 <p> 标签
+            st.markdown(other_columns + '<hr>', unsafe_allow_html=True)
 
